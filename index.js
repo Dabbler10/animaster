@@ -161,29 +161,46 @@ function animaster() {
             });
             return this;
         },
-        play(element) {
-            let totalTime = 0;
-            _steps.forEach(step => {
-                setTimeout(() => {
-                    switch (step.name) {
-                        case 'move':
-                            element.style.transitionDuration = `${step.duration}ms`;
-                            element.style.transform = getTransform(step.params.translation, null);
-                            break;
-                        case 'fadeIn':
-                            this.fadeIn(element, step.duration);
-                            break;
-                        case 'fadeOut':
-                            this.fadeOut(element, step.duration);
-                            break;
-                        case 'scale':
-                            this.scale(element, step.duration, step.params.ratio);
-                            break;
-                    }
-                }, totalTime);
-                totalTime += step.duration;
+        addDelay(duration) {
+            _steps.push({
+                name: 'fadeOut',
+                duration: duration,
             });
             return this;
-        }
+        },
+        play(element, cycled=false) {
+            let totalTime = 0;
+            function a() {
+                _steps.forEach(step => {
+                    setTimeout(() => {
+                        switch (step.name) {
+                            case 'move':
+                                element.style.transitionDuration = `${step.duration}ms`;
+                                element.style.transform = getTransform(step.params.translation, null);
+                                break;
+                            case 'fadeIn':
+                                this.fadeIn(element, step.duration);
+                                break;
+                            case 'fadeOut':
+                                this.fadeOut(element, step.duration);
+                                break;
+                            case 'scale':
+                                this.scale(element, step.duration, step.params.ratio);
+                                break;
+                            case 'delay':
+                                break;
+                        }
+                    }, totalTime);
+                    totalTime += step.duration;
+                });
+                return this;
+            }
+            if (!cycled) {
+                a();
+            }
+            else {
+                setInterval(a, 0);
+            }
+        }   
     }
 }
