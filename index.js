@@ -45,6 +45,15 @@ function addListeners() {
             const block = document.getElementById('heartBlock');
             heartBreaker.stop();
         });
+    document.getElementById('testBlock').addEventListener('click', animaster()
+    .addMove(200, {x: 80, y: 0})
+    .addMove(200, {x: 0, y: 0})
+    .addMove(200, {x: 80, y: 0})
+    .addMove(200, {x: 0, y: 0})
+    .buildHandler())
+    document.getElementById('testBlock2').addEventListener('click', animaster()
+    .addChangeColor(500)
+    .buildHandler())
 }
 
 function getTransform(translation, ratio) {
@@ -146,7 +155,15 @@ function animaster() {
             });
             return this;
         },
-        play(element, cycled=false) {
+        addChangeColor(duration) {
+            _steps.push({
+                name: 'bgColor',
+                duration: duration,
+            });
+            return this;
+        },
+        play(element, cycled=false, animaster=this) {
+            console.log(element);
             let totalTime = 0;
             function a() {
                 _steps.forEach(step => {
@@ -166,6 +183,10 @@ function animaster() {
                                 element.classList.remove('show');
                                 element.classList.add('hide');
                                 break;
+                            case 'bgColor':
+                                element.style.transitionDuration =  `${step.duration}ms`;
+                                element.style.backgroundColor = "black";
+                                break;
                             case 'scale':
                                 element.style.transitionDuration =  `${step.duration}ms`;
                                 element.style.transform = getTransform(null, step.params.ratio);
@@ -176,7 +197,7 @@ function animaster() {
                     }, totalTime);
                     totalTime += step.duration;
                 });
-                return this;
+                return animaster;
             }
             if (!cycled) {
                 a();
@@ -184,6 +205,9 @@ function animaster() {
             else {
                 setInterval(a, 0);
             }
-        }   
+        },
+        buildHandler(){
+            return (element) => { this.play(element.target) };
+        }
     }
 }
