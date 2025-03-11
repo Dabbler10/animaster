@@ -145,6 +145,28 @@ function animaster() {
             });
             return this;
         },
+        addScale(duration) {
+            _steps.push({
+                name: 'scale',
+                duration: duration,
+                params: { ratio }
+            });
+            return this;
+        },
+        addFadeIn(duration) {
+            _steps.push({
+                name: 'fadeIn',
+                duration: duration,
+            });
+            return this;
+        },
+        addFadeOut(duration) {
+            _steps.push({
+                name: 'fadeOut',
+                duration: duration,
+            });
+            return this;
+        },
         play(element) {
             let totalTime = 0;
             _steps.forEach(step => {
