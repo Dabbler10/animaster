@@ -11,7 +11,7 @@ function addListeners() {
     document.getElementById('movePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
-            animaster().addMove(500, {x: 30, y: 30}).addMove(500, {x: 0, y: 0}).play(block);
+            animaster().move(block, 500, {x: 100, y: 100});
         });
 
     document.getElementById('scalePlay')
@@ -83,22 +83,16 @@ function animaster() {
     };
     return {
         move(element, duration, translation) {
-            element.style.transitionDuration = `${duration}ms`;
-            element.style.transform = getTransform(translation, null);
+            this.addMove(duration, translation).play(element);
         },
         fadeIn(element, duration) {
-            element.style.transitionDuration =  `${duration}ms`;
-            element.classList.remove('hide');
-            element.classList.add('show');
+            this.addFadeIn(duration).play(element);
         },
         fadeOut(element, duration) {
-            element.style.transitionDuration =  `${duration}ms`;
-            element.classList.remove('show');
-            element.classList.add('hide');
+            this.addFadeOut(duration).play(element);
         },
         scale(element, duration, ratio) {
-            element.style.transitionDuration =  `${duration}ms`;
-            element.style.transform = getTransform(null, ratio);
+            this.addScale(duration, ratio).play(element);
         },
         moveAndHide(element, duration) {
             this.move(element, duration * 2/5, {x:100, y: 20});
@@ -173,7 +167,8 @@ function animaster() {
                 setTimeout(() => {
                     switch (step.name) {
                         case 'move':
-                            this.move(element, step.duration, step.params.translation);
+                            element.style.transitionDuration = `${step.duration}ms`;
+                            element.style.transform = getTransform(step.params.translation, null);
                             break;
                         case 'fadeIn':
                             this.fadeIn(element, step.duration);
@@ -184,7 +179,6 @@ function animaster() {
                         case 'scale':
                             this.scale(element, step.duration, step.params.ratio);
                             break;
-                        // Если добавите новые операции, их нужно обработать здесь
                     }
                 }, totalTime);
                 totalTime += step.duration;
