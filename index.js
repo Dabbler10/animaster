@@ -11,7 +11,7 @@ function addListeners() {
     document.getElementById('movePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
-            animaster().move(block, 1000, {x: 100, y: 10});
+            animaster().addMove(500, {x: 30, y: 30}).addMove(500, {x: 0, y: 0}).play(block);
         });
 
     document.getElementById('scalePlay')
@@ -54,6 +54,18 @@ function getTransform(translation, ratio) {
 }
 
 function animaster() {
+    const _steps = [];
+    function getTransform(translation, scale) {
+        let result = "";
+        if (translation) {
+            result += `translate(${translation.x}px, ${translation.y}px) `;
+        }
+        if (scale !== null && scale !== undefined) {
+            result += `scale(${scale})`;
+        }
+        return result;
+    }
+
     function resetFadeIn (element) {
         element.style.opacity = null;
     };
@@ -105,13 +117,46 @@ function animaster() {
                 }, 500);
                 timerIds.push(t1);
             }
+
             beat();
             return {
                 stop() {
                     timerIds.forEach(timerId => clearTimeout(timerId));
                     timerIds = [];
                 }
-            };
+            }
+        },
+        addMove(duration, translation) {
+            _steps.push({
+                name: 'move',
+                duration: duration,
+                params: { translation }
+            });
+            return this;
+        },
+        play(element) {
+            let totalTime = 0;
+            _steps.forEach(step => {
+                setTimeout(() => {
+                    switch (step.name) {
+                        case 'move':
+                            this.move(element, step.duration, step.params.translation);
+                            break;
+                        case 'fadeIn':
+                            this.fadeIn(element, step.duration);
+                            break;
+                        case 'fadeOut':
+                            this.fadeOut(element, step.duration);
+                            break;
+                        case 'scale':
+                            this.scale(element, step.duration, step.params.ratio);
+                            break;
+                        // Если добавите новые операции, их нужно обработать здесь
+                    }
+                }, totalTime);
+                totalTime += step.duration;
+            });
+            return this;
         }
     }
 }
