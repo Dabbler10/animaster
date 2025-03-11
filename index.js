@@ -59,7 +59,9 @@ function getTransform(translation, ratio) {
 }
 
 function animaster() {
+
     const _steps = [];
+
     function getTransform(translation, scale) {
         let result = "";
         if (translation) {
@@ -99,7 +101,6 @@ function animaster() {
             setTimeout(() => this.fadeOut(element, duration * 3/5), duration * 2/5);
         },
         resetMoveAndHide(element){
-            // resetFadeIn(element);
             resetFadeOut(element);
             resetMoveAndScale(element);
         },
@@ -139,7 +140,7 @@ function animaster() {
             });
             return this;
         },
-        addScale(duration) {
+        addScale(duration, ratio) {
             _steps.push({
                 name: 'scale',
                 duration: duration,
@@ -171,13 +172,18 @@ function animaster() {
                             element.style.transform = getTransform(step.params.translation, null);
                             break;
                         case 'fadeIn':
-                            this.fadeIn(element, step.duration);
+                            element.style.transitionDuration =  `${step.duration}ms`;
+                            element.classList.remove('hide');
+                            element.classList.add('show');
                             break;
                         case 'fadeOut':
-                            this.fadeOut(element, step.duration);
+                            element.style.transitionDuration =  `${step.duration}ms`;
+                            element.classList.remove('show');
+                            element.classList.add('hide');
                             break;
                         case 'scale':
-                            this.scale(element, step.duration, step.params.ratio);
+                            element.style.transitionDuration =  `${step.duration}ms`;
+                            element.style.transform = getTransform(null, step.params.ratio);
                             break;
                     }
                 }, totalTime);
