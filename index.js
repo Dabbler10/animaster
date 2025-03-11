@@ -24,6 +24,11 @@ function addListeners() {
             const block = document.getElementById('moveAndHideBlock');
             animaster().moveAndHide(block, 1000);
         });
+    document.getElementById('moveAndHideReset')
+        .addEventListener('click', function () {
+            const block = document.getElementById('moveAndHideBlock');
+            animaster().resetMoveAndHide(block, 1000);
+        });
     document.getElementById('showAndHide')
         .addEventListener('click', function () {
             const block = document.getElementById('showAndHideBlock');
@@ -67,13 +72,14 @@ function animaster() {
     }
 
     function resetFadeIn (element) {
-        element.style.opacity = null;
+        element.style.opacity = 0;
     };
     function resetFadeOut (element) {
-        element.style.opacity = null;
+        element.style.opacity = 1;
     };
     function resetMoveAndScale (element) {
-        
+        element.style.transitionDuration = null;
+        element.style.transform = null;
     };
     return {
         move(element, duration, translation) {
@@ -97,6 +103,11 @@ function animaster() {
         moveAndHide(element, duration) {
             this.move(element, duration * 2/5, {x:100, y: 20});
             setTimeout(() => this.fadeOut(element, duration * 3/5), duration * 2/5);
+        },
+        resetMoveAndHide(element){
+            // resetFadeIn(element);
+            resetFadeOut(element);
+            resetMoveAndScale(element);
         },
         showAndHide(element, duration){
             this.fadeIn(element, duration/3);
